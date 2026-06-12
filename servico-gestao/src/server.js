@@ -4,6 +4,8 @@ const routes = require('./infrastructure/http/routes');
 const app = express();
 app.use(express.json()); // Permite ler JSON no corpo das requisições
 
+app.use(express.json());
+
 // Registra as rotas
 app.use('/', routes);
 

@@ -1,19 +1,23 @@
 class PlanoController {
-    // O construtor recebe o Caso de Uso injetado via routes.js
-    constructor(listarPlanosUseCase) {
+    constructor(listarPlanosUseCase, atualizarCustoPlanoUseCase) {
         this.listarPlanosUseCase = listarPlanosUseCase;
+        this.atualizarCustoPlanoUseCase = atualizarCustoPlanoUseCase;
     }
 
-    // Método que atende a rota GET /gestao/planos
     async listar(req, res) {
         try {
-            // No futuro, isso chamará: await this.listarPlanosUseCase.execute();
-            // Por enquanto, vamos retornar uma resposta mockada para testar se o servidor sobe
-            res.status(200).json({ message: 'Endpoint de Planos conectado com sucesso!' });
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
+            const planos = await this.listarPlanosUseCase.execute();
+            return res.status(200).json(planos);
+        } catch (error) { return res.status(500).json({ error: error.message }); }
+    }
+
+    async atualizarCusto(req, res) {
+        try {
+            const { idPlano } = req.params;
+            const { custoMensal } = req.body;
+            const planoAtualizado = await this.atualizarCustoPlanoUseCase.execute(idPlano, custoMensal);
+            return res.status(200).json(planoAtualizado);
+        } catch (error) { return res.status(400).json({ error: error.message }); }
     }
 }
-
 module.exports = PlanoController;
