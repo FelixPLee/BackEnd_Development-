@@ -1,21 +1,12 @@
 const express = require('express');
-const app = express();
+const routes = require('./infrastructure/http/routes');
 
+const app = express();
 app.use(express.json());
 
-// Endpoint de Registrar Pagamento
-app.post('/faturamento/pagamento', (req, res) => {
-    const { dia, mes, ano, codass, valorPago } = req.body;
-    
-    console.log(`[Faturamento] Recebido pagamento de R$${valorPago} para a assinatura ${codass}`);
-    
-    return res.status(200).json({ 
-        mensagem: "Pagamento registrado com sucesso",
-        dados: { codass, valorPago }
-    });
-});
+app.use('/', routes);
 
-const PORT = 3002;
+const PORT = 3002; // Porta designada para o ServicoFaturamento
 app.listen(PORT, () => {
-    console.log(`💰 ServicoFaturamento rodando na porta ${PORT}`);
+    console.log(`💰 ServicoFaturamento rodando isoladamente na porta ${PORT}...`);
 });
