@@ -1,25 +1,17 @@
 const express = require('express');
 const router = express.Router();
 
-const PagamentoRepositorySQLite = require('../database/PagamentoRepositorySQLite');
-const RegistrarPagamentoUseCase = require('../../application/usecases/RegistrarPagamentoUseCase');
-const FaturamentoController = require('./controllers/FaturamentoController');
+const CacheAssinaturasRepositorySQLite = require('../database/CacheAssinaturasRepositorySQLite');
+const VerificarStatusAssinaturaUseCase = require('../../application/usecases/VerificarStatusAssinaturaUseCase');
+const PlanosAtivosController = require('./controllers/PlanosAtivosController');
 
-// Simulação de um Message Broker (Event Driven)
-const mockEventPublisher = {
-    publish: (nomeEvento, payload) => {
-        console.log(`[MESSAGE BROKER] Disparando evento: '${nomeEvento}'`);
-        console.log(`[MESSAGE BROKER] Payload enviado:`, payload);
-        // Futuramente: código real de envio via Axios ou RabbitMQ entraria aqui.
-    }
-};
+// Instanciação e Injeção de Dependências
+const cacheRepo = new CacheAssinaturasRepositorySQLite();
+const verificarStatusUC = new VerificarStatusAssinaturaUseCase(cacheRepo);
+const planosAtivosController = new PlanosAtivosController(verificarStatusUC);
 
-// Instanciando classes
-const pagamentoRepo = new PagamentoRepositorySQLite();
-const registrarPagamentoUC = new RegistrarPagamentoUseCase(pagamentoRepo, mockEventPublisher);
-const faturamentoController = new FaturamentoController(registrarPagamentoUC);
+// Rota de Consulta da Cache (GET /planosativos/:codass)
+router.get('/planosativos/:codass', (req, res) => planosAtivosController.verificar(req, res));
 
-// Rota solicitada
-router.post('/registrarpagamento', (req, res) => faturamentoController.registrar(req, res));
-
-module.exports = router;
+// Exportamos também o repositório para o servidor conseguir injetá-lo no escutador de eventos
+module.exports = { router, cacheRepo };

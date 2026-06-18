@@ -3,28 +3,45 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 
-// Roteamento para o Serviço de Gestão (Rodando na porta 3001)
+// =========================================================================
+// 1. MAPEAMENTO DO SERVIÇO DE GESTÃO (Porta 3001)
+// =========================================================================
 app.use('/gerenciaplanos', createProxyMiddleware({ 
-    target: 'http://localhost:3001', 
+    target: 'http://127.0.0.1:3001', // ⚠️ MUDANÇA CRUCIAL AQUI
     changeOrigin: true 
 }));
 
-// Roteamento para o Serviço de Faturamento (Rodando na porta 3002)
-app.use('/faturamento', createProxyMiddleware({ 
-    target: 'http://localhost:3002', 
-    changeOrigin: true 
+// =========================================================================
+// 2. MAPEAMENTO DO SERVIÇO DE FATURAMENTO (Porta 3002)
+// =========================================================================
+app.use('/registrarpagamento', createProxyMiddleware({ 
+    target: 'http://127.0.0.1:3002', // ⚠️ E AQUI
+    changeOrigin: true,
+    pathRewrite: {
+        '^/registrarpagamento': '/registrarpagamento', 
+    }
 }));
 
-// Roteamento para o Serviço de Planos Ativos (Rodando na porta 3003)
+// =========================================================================
+// 3. MAPEAMENTO DO SERVIÇO DE PLANOS ATIVOS (Porta 3003)
+// =========================================================================
 app.use('/planosativos', createProxyMiddleware({ 
-    target: 'http://localhost:3003', 
-    changeOrigin: true 
+    target: 'http://127.0.0.1:3003', // ⚠️ E AQUI
+    changeOrigin: true,
+    pathRewrite: {
+        '^/planosativos': '/planosativos', 
+    }
 }));
+
+// Interceptor para vermos no terminal o que está chegando
+app.use((req, res, next) => {
+    console.log(`[GATEWAY LOG] Requisição recebida para o caminho: ${req.url}`);
+    next();
+});
 
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 API Gateway rodando na porta ${PORT}`);
-    console.log(`-> Roteando /gerenciaplanos para a porta 3001`);
-    console.log(`-> Roteando /faturamento para a porta 3002`);
-    console.log(`-> Roteando /planosativos para a porta 3003`);
+    console.log(`====================================================`);
+    console.log(`🚀 API GATEWAY ATUALIZADO E ATIVO NA PORTA ${PORT}`);
+    console.log(`====================================================`);
 });

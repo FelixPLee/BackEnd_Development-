@@ -4,8 +4,8 @@ const path = require('path');
 
 async function openDb() {
     return open({
-        // Cria um banco de dados próprio para o Faturamento
-        filename: path.resolve(__dirname, '../../../database-faturamento.sqlite'),
+        // Ficheiro exclusivo para simular a cache deste microsserviço
+        filename: path.resolve(__dirname, '../../../database-cache-planos.sqlite'),
         driver: sqlite3.Database
     });
 }

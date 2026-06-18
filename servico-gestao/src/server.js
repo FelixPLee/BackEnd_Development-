@@ -1,17 +1,21 @@
 const express = require('express');
-const routes = require('./infrastructure/http/routes');
+// 👇 Caminho corrigido para apontar para o local certo da Arquitetura Limpa
+const routes = require('./infrastructure/http/routes'); 
 
 const app = express();
-app.use(express.json()); // Permite ler JSON no corpo das requisições
 
+// Middleware essencial para interceptar e ler corpos de requisição JSON (POST/PATCH)
 app.use(express.json());
 
-// Registra as rotas
+// Acopla os endpoints do serviço de gerenciamento (/gerenciaplanos/*)
 app.use('/', routes);
 
-const PORT = 3000;
+// Porta 3001 designada para liberar a porta 3000 para o API Gateway
+const PORT = 3001;
 app.listen(PORT, () => {
-    console.log(`ServicoGestao rodando na porta ${PORT}...`);
-    console.log(`Acesse: http://localhost:${PORT}/gestao/clientes`);
-    console.log(`Acesse: http://localhost:${PORT}/gestao/planos`);
+    console.log(`====================================================`);
+    console.log(`📶 ServicoGestao (Fase 1) ativo e isolado na porta ${PORT}`);
+    console.log(`====================================================`);
+    console.log(`-> Endpoints integrados via Clean Architecture.`);
+    console.log(`----------------------------------------------------`);
 });
